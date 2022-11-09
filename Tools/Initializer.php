@@ -28,7 +28,7 @@ class Initializer
     public static function writeTableFile(bool $isForce = false): array
     {
         $tables = DatabaseService::getTables();
-        $tableFile = "src/Schemas/Tables.php";
+        $tableFile = "src/schemas/Tables.php";
 
         if (file_exists($tableFile) && $isForce) {
 
@@ -56,7 +56,7 @@ class Initializer
        
         foreach ($tables as $table) {
             $className = ucfirst($table); //TODO Retourne la chaîne string après avoir remplacé le premier caractère par sa majuscule,
-            $schemaFile = "src/Schemas/$className.php";
+            $schemaFile = "src/schemas/$className.php";
             if (file_exists($schemaFile) && $isForce) { // TODO si le fichier existe le créer et le force 
                 if (!unlink($schemaFile)) { //  TODO unlink = supprime le fichier
                     throw new Exception("le fichier n'est pas supprimé");

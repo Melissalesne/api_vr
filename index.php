@@ -15,24 +15,20 @@ require_once 'autoload.php';
 use Controllers\DatabaseController;
 use Helpers\HttpRequest;
 use Helpers\HttpResponse;
-use Services\DatabaseService;
 use Models\Model;
 use Models\ModelList;
+use Services\DatabaseService;
 
-
-$model= new Model("produit", ["nom"=>"vinyle rouge"]);
-$articleData = $model->data();    // TODO On execute la fonction data du Model  
-$modelList= new ModelList("produit", [["nom"=>"vinyle bleue"], ["nom"=>" vinyle verte"]]);
-$modelListeData = $modelList->data();
-$test = $modelList->idList();
-
-
-
+//tests
+// $model= new Model("produit", ["nom"=>"une veste rouge"]);
+// $articleData = $model->data();          //on execute la fonction data du model
+// $modelList= new ModelList("produit", [["nom"=>"une veste bleue"], ["nom"=>"une veste verte"]]);
+// $modelListeData = $modelList->data();
+// $test = $modelList->idList();
+//fin de test
 
 $request = HttpRequest::instance();
-// $tables = DatabaseService::getTables();
-
-
+$tables = DatabaseService::getTables();
 
 if ($_ENV['env'] == 'dev' && !empty($request->route) && $request->route[0] == 'init') {
     if (Initializer::start($request)) {
@@ -45,7 +41,7 @@ if ($_ENV['env'] == 'dev' && !empty($request->route) && $request->route[0] == 'i
 
 if (!empty($request->route)) {
     $const = strtoupper($request->route[0]);
-    $key = "Schemas\Table::$const";
+    $key = "Schemas\\Tables::$const";
     if (!defined($key)) {
         HttpResponse::exit(404);
     }
