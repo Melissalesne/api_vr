@@ -25,7 +25,7 @@ class DatabaseService
             $dbName = $dbConfig["dbName"]; //? nom de la BDD 
             $dsn = "mysql:host=$host;port=$port;dbname=$dbName"; //? connexion à MSQL 
             $user = $dbConfig["user"]; //? nom de l'utilisateur "root"
-            $pass = $dbConfig["pass"]; //? le MDP 
+            $pass = $dbConfig["pass"]; //? le MDP il n'y en a pas sur windows
             try {
                 $dbConnection = new PDO(
                     $dsn,
@@ -42,13 +42,13 @@ class DatabaseService
             }
             self::$connection = $dbConnection;
         }
-        return self::$connection;
+        return self::$connection; //? retrun la connexion
     }
     public function query(string $sql, array $params = []): object //? création d'une requete préparée pour éviter les injection SQL
     {
-        $statement = $this->connect()->prepare($sql);
-        $result = $statement->execute($params);
-        return (object)['result' => $result, 'statement' => $statement];
+        $statement = $this->connect()->prepare($sql); // ? prépare la requete
+        $result = $statement->execute($params); // ? execute les paramètre du []
+        return (object)['result' => $result, 'statement' => $statement]; //? retourne le résultat de la requete
     }
     /**
      //? Retourne la liste des tables en base de données sous forme de tableau
@@ -146,11 +146,11 @@ class DatabaseService
         $values = substr($values, 0, -2); // ? on retire les 2 dernier char 
 
 
-        $sql = "INSERT INTO $this->table $columns VALUES $values ON DUPLICATE KEY UPDATE $duplicateUpdate;";
+        $sql = "INSERT INTO $this->table $columns VALUES $values ON DUPLICATE KEY UPDATE $duplicateUpdate;"; // ? on insert les valeurs dans la table 
 
         $this->query($sql, $valuesToBind);
         //?la requete en cours va prendre en parametre le $sql plus le [] $valuesToBind
-        return $modelList->data(); //?renvoi un tableau associatif 
+        return $modelList->data(); //?return  un tableau associatif 
     }
 
     /**
@@ -189,8 +189,7 @@ public function softDelete(array $body): ?array {
     $idList = $modelList->idList(); //?on récupère tous les id de la liste, 
     $where = "";
     
-    foreach($idList as $id){  //? pour chaque Id dans 
-         idList, 
+    foreach($idList as $id){  //? pour chaque Id dans  idList, 
       $where .= '?, '; //? on créer une chaine de characte de x "?, " (x = taille de la liste)
     }
     

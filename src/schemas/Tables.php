@@ -1,6 +1,6 @@
 <?php namespace Schemas ;
 
-class Tables{
+class Table{
 
 	const ARTISTE = 'artiste';
 	const CATEGORY = 'category';

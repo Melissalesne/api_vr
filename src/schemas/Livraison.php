@@ -17,5 +17,6 @@ class Livraison{
 		'estime_arrive'=> ['type' =>'varchar(50)' ,'nullable' =>'1' ,'default' => ''],
 		'type_livraison'=> ['type' =>'varchar(50)' ,'nullable' =>'1' ,'default' => ''],
 		'Id_commande'=> ['type' =>'varchar(255)' ,'nullable' =>'1' ,'default' => ''],
+		'is_deleted'=> ['type' =>'tinyint(1)' ,'nullable' =>'1' ,'default' => ''],
 	];
 }

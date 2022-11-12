@@ -9,5 +9,6 @@ class Commande{
 		'statut'=> ['type' =>'varchar(50)' ,'nullable' =>'1' ,'default' => ''],
 		'mode_paiement'=> ['type' =>'varchar(50)' ,'nullable' =>'1' ,'default' => ''],
 		'Id_client'=> ['type' =>'varchar(255)' ,'nullable' =>'1' ,'default' => ''],
+		'is_deleted'=> ['type' =>'tinyint(1)' ,'nullable' =>'1' ,'default' => ''],
 	];
 }

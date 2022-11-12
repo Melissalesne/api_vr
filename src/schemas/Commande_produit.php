@@ -9,5 +9,6 @@ class Commande_produit{
 		'prix'=> ['type' =>'double' ,'nullable' =>'1' ,'default' => ''],
 		'taux_tva'=> ['type' =>'double' ,'nullable' =>'1' ,'default' => ''],
 		'quantite'=> ['type' =>'varchar(255)' ,'nullable' =>'1' ,'default' => ''],
+		'is_deleted'=> ['type' =>'tinyint(1)' ,'nullable' =>'1' ,'default' => ''],
 	];
 }

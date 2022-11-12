@@ -13,5 +13,6 @@ class Client{
 		'code_postal'=> ['type' =>'varchar(50)' ,'nullable' =>'1' ,'default' => ''],
 		'pays'=> ['type' =>'varchar(50)' ,'nullable' =>'1' ,'default' => ''],
 		'Id_compte'=> ['type' =>'varchar(255)' ,'nullable' =>'1' ,'default' => ''],
+		'is_deleted'=> ['type' =>'tinyint(1)' ,'nullable' =>'1' ,'default' => ''],
 	];
 }

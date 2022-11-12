@@ -15,5 +15,6 @@ class Produit{
 		'top_ventes'=> ['type' =>'tinyint(1)' ,'nullable' =>'1' ,'default' => ''],
 		'nouveautes'=> ['type' =>'tinyint(1)' ,'nullable' =>'1' ,'default' => ''],
 		'Id_label'=> ['type' =>'varchar(255)' ,'nullable' =>'1' ,'default' => ''],
+		'is_deleted'=> ['type' =>'tinyint(1)' ,'nullable' =>'1' ,'default' => ''],
 	];
 }

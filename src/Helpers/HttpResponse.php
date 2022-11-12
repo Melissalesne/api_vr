@@ -7,11 +7,11 @@ class HttpResponse
     
    public static function send(array $data, int $status = 200): void
    {
-      if ($status >= 300) {      //? Si le status est <= 300
-         self::exit($status);   //? Elle appelle la methode exit
+      if ($status >= 300) {      
+         self::exit($status);   
       }
-      echo json_encode($data); //? Ecrit les datas au format json
-      die;                    //? Arrête l'exécution du script
+      echo json_encode($data); 
+      die;                    
    }
 
 
