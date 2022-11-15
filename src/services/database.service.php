@@ -94,7 +94,7 @@ class DatabaseService
         foreach ($idList as $id){ //? pr chaque id dans la list 
             $where .= "?, "; // ? je  créer une chaine de caractére
         }
-        $where = substr($where, 0, -2) . ")";   
+        $where = substr($where, 0, -2) . ")";   //? j'enléve les 2 derniers char et j'ajoute une parenthèse 
 
         $resp = $this->selectWhere($where, $idList, PDO::FETCH_ASSOC); //?je  recupères une condition avec en parametre le $where, (id doit etre dans idlist)
 
@@ -105,7 +105,7 @@ class DatabaseService
                     continue; // ? on passe a l'autre instance 
                 }
 
-                if ($arr[$this->pk] === $data[$this->pk]) {  //? si la pk est === pk de data existe devient true
+                if ($arr[$this->pk] === $data[$this->pk]) {  //? si la pk est === pk de data existe 
                     $exist = true;
                     foreach ($data as $k => $v) {       //? pour chaque $k(clé) et $v(valeurs)  dans data
                         $arr[$k] = $v;     // ?je remplace les clé de $arr par les valeurs du body 
@@ -140,13 +140,13 @@ class DatabaseService
                 $values .= "?, ";       //?j' ajoute ",? " a $values
                 array_push($valuesToBind, $v);      //? je push dans un tableau la valueToBind et la $value
             }
-            $values = substr($values, 0, -2) . "), ";
+            $values = substr($values, 0, -2) . "), "; //?je retire la "," et l'espace, et j'ajoute une "("
         }
 
         $values = substr($values, 0, -2); // ? on retire les 2 dernier char 
 
 
-        $sql = "INSERT INTO $this->table $columns VALUES $values ON DUPLICATE KEY UPDATE $duplicateUpdate;"; // ? on insert les valeurs dans la table 
+        $sql = "INSERT INTO $this->table $columns VALUES $values ON DUPLICATE KEY UPDATE $duplicateUpdate;"; // ? on insert les valeurs dans la table  et j'update 
 
         $this->query($sql, $valuesToBind);
         //?la requete en cours va prendre en parametre le $sql plus le [] $valuesToBind
@@ -164,11 +164,11 @@ public function softDelete(array $body): ?array {
     $idList = $modelList->idList(); //?on récupère tous les id de la liste, 
     $where = "";
 
+    $prefix = ""; // ? création du préfixe
     foreach($idList as $id){     //? pour chaque Id dans idList, 
-      $where .= '?, '; //? on créer une chaine de characte de x "?, " (x = taille de la liste)
+      $where .= "$prefix?"; //? on écrit préfix ?
+      $prefix = ', '; // ? on remplace "" par ", " pour à la prochaine boucle ecrire ", ?" dans where
     }
-
-    $where = substr($where, 0, -2);    //?on retire les 2 dernier char (dans ce cas ci : ', ')
 
     $sql = "UPDATE $this->table SET is_deleted=? WHERE $this->pk IN ($where);";       //? on met a jour les lignes ou la condition (where) est remplie. 
 

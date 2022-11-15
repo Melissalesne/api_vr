@@ -16,7 +16,7 @@ class Model
 
 
         $this->table = $table;
-        $this->pk = "Id_$this->table";                          // ? recupere le nom de la colonne de la table
+        $this->pk = "Id_$this->table";                          // ? recupere le nom de  la table
         $this->schema = self::getSchema($table);
         if (!isset($json[$this->pk])) {                        //? si on ne recupere pas l'id dans le json
 
@@ -37,10 +37,12 @@ class Model
     }
     public function nextGuid(int $length = 16): string
     {
-        $guid = microtime(true) * 10000;
-        $guid = base_convert($guid, 10, 35);
-        while (strlen($guid) < $length) {                             // ?  strlen permet de mesurer la taille d'une chaine de caractères (espaces inclus)
-            $guid .= base_convert(rand(0, 35), 10, 35);               // ? le random permet de choisir 1 caractere parmis 36 alatoires
+        $guid = microtime(true) * 10000;   // ? timestamp
+        $guid = base_convert($guid, 10, 36); //? convertir en base 36, et on part de base 10 jus'qua 36
+        while (strlen($guid) < $length) { 
+            $random = rand(0, 35);  //   ? on va chercher un random entre 0 et 35             
+            $random = base_convert($random, 10, 36); // ? on le converti en base 36 
+            $guid = $guid.$random;    // ?   on récupère le guid  du dessu et on le concatène (ajoute)un random                            
         }
 
         return $guid;
@@ -48,10 +50,10 @@ class Model
 
     public function data() : array
 {
-  $data = (array) clone $this;             // ?  le clone copie le model(id, nom, etc...) recréé un json pour changer la destination 
+  $data = (array) clone $this;             // ?  le clone copie le model(id, nom, etc...) recréé un json 
   foreach($data as $key => $value){    // ? pour chaque clé  valeurs dans data       
     if(!isset($this->schema[$key])){   // ? si on ne récupère pas la $key
-      unset($data[$key]);             // ?  sa supprime la variable $key de $ $data
+      unset($data[$key]);             // ?  sa supprime la variable $key de  $data
     }
   }
   return $data;
