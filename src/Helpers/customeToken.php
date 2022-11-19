@@ -5,7 +5,7 @@ use Exception;
 class CustomeToken {
 
     private static $prefix = "$2y$08$"; //bcrypt (salt = 8)
-    private static $defaultValidity = 60 * 60 * 1; //1h
+    private static $defaultValidity = 60 * 60 * 24; //1h
     private static $remarkableKey = "|"; // ? créer le caractère remarquable 
     private function __construct()
     {
@@ -70,8 +70,10 @@ private function encode(array $decoded = []) : void
     $decodedStringify = json_encode($this->decoded); // ? me renvoie une chaine de caractère 
 
     $payload = base64_encode($decodedStringify); // ? je l'encode en base64
-
-    $signature = password_hash($payload.  $_ENV['secret_key'], PASSWORD_BCRYPT, ['cost' => 8]); //? je génére une chaine via un algorithme 
+   
+    // $signature = password_hash($payload.$_ENV , PASSWORD_BCRYPT, ['cost' => 8]); //? je génére une chaine via un algorithme 
+    $secret_key = $_ENV['config']->secret_key->secret;
+        $signature = password_hash($payload. self::$separator . $secret_key, PASSWORD_BCRYPT, ['cost' => 8]);
     
     $token = "$payload".self::$remarkableKey."$signature"; // ? on concaténe le payload, $remarkableKey et la signature
 
@@ -89,7 +91,9 @@ private function decode(string $encoded) : void
     $encodedSplit = explode(self::$remarkableKey, $token); 
     $signature = $encodedSplit[1]; //? supprime le caractère remarquable |
     $payload = $encodedSplit[0]; // ? split la chaine 
-    if(password_verify($payload. $_ENV['secret_key'], $signature )){ // ? on vérifie si le mdp est hasché
+    $secret_key = $_ENV['config']->secret_key->secret;
+    if(password_verify($payload. self::$separator . $secret_key, $signature)){ // ? on vérifie si le mdp est hasché
+
         $decoded = base64_decode($payload);
         $decoded = json_decode($decoded,true);
     }

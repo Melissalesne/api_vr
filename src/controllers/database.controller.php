@@ -38,7 +38,7 @@ private function get() :?array
 {
 
   $dbs = new DatabaseService($this->table); //? instancie  un new DatabaseService qui renvoie la table  de l'instance en cour 
-  $data = $dbs->selectWhere("$this->pk = ?", [$this->id]); //? execute une requete sql qui va selectionner avec une condition 
+  $data = $dbs->selectWhere(is_null($this->id) ?: "$this->pk= ?", [$this->id]); //? execute une requete sql qui va selectionner avec une condition 
   return $data; //? retourne les données 
 }
 

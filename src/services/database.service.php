@@ -4,6 +4,7 @@
 use Models\ModelList;
 use PDO;
 use PDOException;
+use Helpers\HttpRequest;
 
 class DatabaseService
 {
@@ -19,13 +20,13 @@ class DatabaseService
     private function connect(): PDO
     {
         if (self::$connection == null) { // TODO connexion à la BDD
-            $dbConfig = $_ENV['db'];
-            $host = $dbConfig["host"]; //? hôte de connexion à la BDD 
-            $port = $dbConfig["port"]; //?  Le numéro de port où le serveur de base de données est en train d'écouter.
-            $dbName = $dbConfig["dbName"]; //? nom de la BDD 
+            $dbConfig = $_ENV['config']->db;
+            $host = $dbConfig->host; //? hôte de connexion à la BDD 
+            $port = $dbConfig->port; //?  Le numéro de port où le serveur de base de données est en train d'écouter.
+            $dbName = $dbConfig->dbName; //? nom de la BDD 
             $dsn = "mysql:host=$host;port=$port;dbname=$dbName"; //? connexion à MSQL 
-            $user = $dbConfig["user"]; //? nom de l'utilisateur "root"
-            $pass = $dbConfig["pass"]; //? le MDP il n'y en a pas sur windows
+            $user = $dbConfig->user; //? nom de l'utilisateur "root"
+            $pass = $dbConfig->pass; //? le MDP il n'y en a pas sur windows
             try {
                 $dbConnection = new PDO(
                     $dsn,
@@ -68,9 +69,9 @@ class DatabaseService
     public function selectWhere(string $where = "1", array $bind = []): array 
     {
         $sql = "SELECT * FROM $this->table WHERE $where;"; //? on récupère toutes les lignes de la table de l'instance en cours avec la condition $where
-        $resp = $this->query($sql, $bind); //? 
+        $resp = $this->query($sql, $bind); //? selectionne la table compte
         $rows = $resp->statement->fetchAll(PDO::FETCH_CLASS);   //? statement permet de faire plusieurs fois la meme requete / optimise / récupére tte les lignes sous forme de tableau associatif(récupére les classes)
-        return $rows;
+        return $rows; // ? récupère la ligne de la colonne de ma table 
     }
 
     public function getSchema()

@@ -1,17 +1,8 @@
-CREATE TABLE compte(
-   Id_compte VARCHAR(255),
-   email VARCHAR(100),
-   mot_de_passe VARCHAR(255),
-   is_deleted BOOLEAN,
-   PRIMARY KEY(Id_compte)
-);
-
 CREATE TABLE label(
    Id_label VARCHAR(255),
    nom VARCHAR(150),
    img_src VARCHAR(255),
    img_alt VARCHAR(255),
-   is_deleted BOOLEAN,
    PRIMARY KEY(Id_label)
 );
 
@@ -20,7 +11,6 @@ CREATE TABLE artiste(
    nom VARCHAR(100),
    img_src VARCHAR(255),
    img_alt VARCHAR(255),
-   is_deleted BOOLEAN,
    PRIMARY KEY(Id_artiste)
 );
 
@@ -34,8 +24,6 @@ CREATE TABLE produit(
    stock_quantites INT,
    tx_tva DOUBLE,
    tx_reduction DOUBLE,
-   top_ventes BOOLEAN,
-   nouveautes BOOLEAN,
    Id_label VARCHAR(255),
    PRIMARY KEY(Id_produit),
    FOREIGN KEY(Id_label) REFERENCES label(Id_label)
@@ -63,7 +51,6 @@ CREATE TABLE category(
    nom_categorie VARCHAR(150),
    img_src VARCHAR(255),
    img_alt VARCHAR(255),
-   is_deleted BOOLEAN,
    PRIMARY KEY(Id_category)
 );
 
@@ -75,6 +62,24 @@ CREATE TABLE fournisseur_produit(
    PRIMARY KEY(Id_fournisseur, Id_produit, Id_Fournisseur_produits),
    FOREIGN KEY(Id_fournisseur) REFERENCES fournisseur(Id_fournisseur),
    FOREIGN KEY(Id_produit) REFERENCES produit(Id_produit)
+);
+
+CREATE TABLE role(
+   Id_role VARCHAR(255),
+   titre VARCHAR(255),
+   permission INT,
+   is_deleted BOOLEAN,
+   PRIMARY KEY(Id_role)
+);
+
+CREATE TABLE compte(
+   Id_compte VARCHAR(255),
+   email VARCHAR(100),
+   mot_de_passe VARCHAR(255),
+   is_deleted VARCHAR(50),
+   Id_role VARCHAR(255),
+   PRIMARY KEY(Id_compte),
+   FOREIGN KEY(Id_role) REFERENCES role(Id_role)
 );
 
 CREATE TABLE client(
@@ -141,7 +146,6 @@ CREATE TABLE Commande_produit(
    Id_Commandes_produits VARCHAR(255),
    prix DOUBLE,
    taux_tva DOUBLE,
-   quantite VARCHAR(255),
    PRIMARY KEY(Id_commande, Id_produit, Id_Commandes_produits),
    FOREIGN KEY(Id_commande) REFERENCES commande(Id_commande),
    FOREIGN KEY(Id_produit) REFERENCES produit(Id_produit)

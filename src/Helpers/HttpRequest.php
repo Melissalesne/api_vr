@@ -14,7 +14,7 @@ class HttpRequest
         $this->route = explode("/", trim($_SERVER['REQUEST_URI'], "/"));   //? recupère la route "route" avec le $_SERVER['REQUEST_URI'] et trim supprime les "/" qui entourents la chaine de caractere
        
     }
-    private static $instance;
+    private static HttpRequest $instance;
     
     
    
