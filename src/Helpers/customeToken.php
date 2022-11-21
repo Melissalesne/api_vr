@@ -5,7 +5,7 @@ use Exception;
 class CustomeToken {
 
     private static $prefix = "$2y$08$"; //bcrypt (salt = 8)
-    private static $defaultValidity = 60 * 60 * 24; //1h
+    private static $defaultValidity = 60 * 60 * 24; //24H
     private static $remarkableKey = "|"; // ? créer le caractère remarquable 
     private function __construct()
     {

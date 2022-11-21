@@ -11,7 +11,7 @@ class Model
     public string $pk;
     public array $schema;
 
-    public function __construct(string $table, array $json)
+    public function __construct(string $table, array $json) // ? construit le schéma de chaque tables 
     {
 
 

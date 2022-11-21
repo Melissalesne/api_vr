@@ -9,6 +9,10 @@ use Services\DatabaseService;
 
 class AuthController { 
 
+    /**
+     // ? Cette fonction va récupérer les différentes parties des routes sous forme de tableau associatif
+     */
+
     public function __construct(HttpRequest $request)
     {
         $this->controller = $request->route[0]; // ? récupére la route 
@@ -34,7 +38,7 @@ class AuthController {
         return $result;
     }
     /**
-     // ? cette fonction va vérifier si les données envoyer par l'utilisateur sont correcte et sont renvoyer en BDD ? 
+     // ? cette fonction va vérifier si les données envoyer par l'utilisateur sont correcte et sont renvoyer en BDD 
      *
      * @return void
      */
