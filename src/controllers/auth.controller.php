@@ -3,6 +3,7 @@
 
 use Helpers\HttpRequest;
 use Services\DatabaseService;
+use Helpers\CustomeToken;
 
 
 
@@ -15,14 +16,14 @@ class AuthController {
 
     public function __construct(HttpRequest $request)
     {
-        $this->controller = $request->route[0]; // ? récupére la route 
+        $this->controller = $request->route[0]; 
         // http://portfolio-api/auth
 
         $this->function = isset($request->route[1]) ? $request->route[1] : null;
         // http://portfolio-api/auth/login
 
         $request_body = file_get_contents('php://input');
-        $this->body = json_decode($request_body, true) ?: []; // ? renvoie l'objet dans un tableau associatif 
+        $this->body = json_decode($request_body, true) ?: []; 
 
         $this->action = $request->method;
         // Methode declarée dans le fetch de react
@@ -46,7 +47,7 @@ class AuthController {
     {
         $dbs = new DatabaseService('compte'); // ? je créer une instance de la class database service pour aller vérifier la class de la table "compte"
 
-        $email = filter_var($this->body['email'], FILTER_SANITIZE_EMAIL); // ? va supprimer tout les caractères illégaux
+        $email = filter_var($this->body['email'], FILTER_SANITIZE_EMAIL); 
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { // ? si c'est pas une adresse mail 
             return ["result" => false]; // ? renvoie la valeur a false
@@ -63,10 +64,10 @@ class AuthController {
 
             //? Créer un Token à partir d'un tableau associatif
 
-            $tokenFromDataArray = Token::create(['email' => $compte[0]->email, 'mot_de_passe' => $compte[0]->mot_de_passe]);
+            $tokenFromDataArray = CustomeToken::create(['email' => $compte[0]->email, 'mot_de_passe' => $compte[0]->mot_de_passe]);
             $encoded = $tokenFromDataArray->encoded;
 
-            return ["result" => true, "role" => $role[0]->weight, "id" => $compte[0]->Id_compte, "token" => $encoded];
+            return ["result" => true, "role" => $role[0]->permission, "id" => $compte[0]->Id_compte, "token" => $encoded];
         }
 
         return ["result" => false];

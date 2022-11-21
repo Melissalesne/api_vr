@@ -7,6 +7,7 @@ class CustomeToken {
     private static $prefix = "$2y$08$"; //bcrypt (salt = 8)
     private static $defaultValidity = 60 * 60 * 24; //24H
     private static $remarkableKey = "|"; // ? créer le caractère remarquable 
+    private static $separator = null;
     private function __construct()
     {
 
@@ -73,7 +74,7 @@ private function encode(array $decoded = []) : void
    
     // $signature = password_hash($payload.$_ENV , PASSWORD_BCRYPT, ['cost' => 8]); //? je génére une chaine via un algorithme 
     $secret_key = $_ENV['config']->secret_key->secret;
-        $signature = password_hash($payload. self::$separator . $secret_key, PASSWORD_BCRYPT, ['cost' => 8]);
+    $signature = password_hash($payload. self::$separator . $secret_key, PASSWORD_BCRYPT, ['cost' => 8]);
     
     $token = "$payload".self::$remarkableKey."$signature"; // ? on concaténe le payload, $remarkableKey et la signature
 
