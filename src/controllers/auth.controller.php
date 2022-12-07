@@ -23,7 +23,7 @@ class AuthController {
         // http://portfolio-api/auth/login
 
         $request_body = file_get_contents('php://input');
-        $this->body = json_decode($request_body, true) ?: []; 
+        $this->body = json_decode($request_body, true) ?: [];  // ? récupére les données dans un array au format json
 
         $this->action = $request->method;
         // Methode declarée dans le fetch de react
@@ -45,33 +45,64 @@ class AuthController {
      */
     public function connexion() 
     {
-        $dbs = new DatabaseService('compte'); // ? je créer une instance de la class database service pour aller vérifier la class de la table "compte"
+        $dbs = new DatabaseService('compte');  // ? je créer une instance de la class DBS pour la table compte 
 
         $email = filter_var($this->body['email'], FILTER_SANITIZE_EMAIL); 
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { // ? si c'est pas une adresse mail 
-            return ["result" => false]; // ? renvoie la valeur a false
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { // ? si l'email n'est pas valide 
+            return ["result" => false]; // ? on retourne false 
         }
 
-        $compte = $dbs->selectWhere("email = ? AND is_deleted = ?", [$email, 0]); // ?? je comprend pas 
-        $prefix = $_ENV['config']->hash->prefix; 
+        $compte = $dbs->selectWhere("email = ? AND is_deleted = ?", [$email, 0]); //? selectionne tt les emails de la bdd qui à pour valeur email et is_deleted à 0 
+        $prefix = $_ENV['config']->hash->prefix; // ? va chercher le prefix dans le config pour le mdp
 
-        if (count($compte) == 1 && password_verify($this->body['mot_de_passe'], $prefix . $compte[0]->mot_de_passe)) { // ? si le nombre de compte est égale a 1 
-            // ? et va vérifier si le MDP entré par l'utilisateur concorde au mdp hashé en BDD
+        if (count($compte) == 1 && password_verify($this->body['mot_de_passe'], $prefix . $compte[0]->mot_de_passe)) {  // ? si on a trouvé un compte on verifie le mdp pour voir si il correspond
+            
 
-            $dbs = new DatabaseService("role"); // ? je créer une instance de la class database service pour aller vérifier la class de la table "role"
-            $role = $dbs->selectWhere("Id_role = ? AND is_deleted = ?", [$compte[0]->Id_role, 0]); // ?? je comprend pas 
 
-            //? Créer un Token à partir d'un tableau associatif
+            $dbs = new DatabaseService("role"); // ? je créer une instance de la class DBS pour la table role
+            $role = $dbs->selectWhere("Id_role = ? AND is_deleted = ?", [$compte[0]->Id_role, 0]); //? récupére l'id role dans la table compte 
+
+            //? Créer un Token à partir d'un tableau associatif (67,68)
 
             $tokenFromDataArray = CustomeToken::create(['email' => $compte[0]->email, 'mot_de_passe' => $compte[0]->mot_de_passe]);
             $encoded = $tokenFromDataArray->encoded;
 
-            return ["result" => true, "role" => $role[0]->permission, "id" => $compte[0]->Id_compte, "token" => $encoded];
+
+
+            return ["result" => true, "role" => $role[0]->permission, "id" => $compte->Id_compte, "token" => $encoded]; // ? renvoi le result (role, id ,token )
         }
 
-        return ["result" => false];
+        return ["result" => false]; // ? aucun compte n'a été trouvé ou le mdp ne correspond pas 
     }
+
+
+    // public function check() {
+    //     $headers = apache_request_headers();
+    //     if(isset($header["Authorization"])) {
+    //         $token = $headers["Authorization"];
+    //     }
+    //     $secretKey = $_ENV['config']->$secretKey->secret;
+    //     if(isset($token) && !empty($token)) {
+    //         try {
+    //             $payload = CustomeToken($token, new Key($secretKey, 'efighijbsdkfbm'));
+    //         } catch (Exception $e) {
+    //             $payload = null;
+    //         }
+    //         if (isset($payload) &&
+    //         $payload->iss === "vinyle_remenber" &&
+    //         $payload->nbf  < time() &&
+    //         $payload->exp  > time()
+    //         ) {
+
+    //             return ["result" => true, "role" => $payload->compteRole, "id" => $payload->compteId];
+
+    //         }
+               
+    //     }
+
+    //     return ["result" => false]; 
+    // }
 }
 
 

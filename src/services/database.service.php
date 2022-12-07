@@ -19,7 +19,7 @@ class DatabaseService
     private static ?PDO $connection = null;
     private function connect(): PDO
     {
-        if (self::$connection == null) { // TODO connexion à la BDD
+        if (self::$connection == null) { //? si la connection est = à null on l'ecrit 
             $dbConfig = $_ENV['config']->db;
             $host = $dbConfig->host; //? hôte de connexion à la BDD 
             $port = $dbConfig->port; //?  Le numéro de port où le serveur de base de données est en train d'écouter.

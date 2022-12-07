@@ -38,14 +38,24 @@ header("Access-Control-Allow-Methods: *");
 
 use Helpers\CustomeToken; 
 
-// $tokenFromDataArray = CustomeToken::create(['email' => "Melissa@test.com", 'mot_de_passe' => ""]); //? créer le token dans un tableau 
-// $encoded = $tokenFromDataArray->encoded; // ? encode le token
-// $tokenFromEncodedString = CustomeToken::create($encoded); // ? recréer un array avec les valeurs 
-// $decoded = $tokenFromEncodedString->decoded; // ? avec les valeurs initial (décodé)
-// $test = $tokenFromEncodedString->isValid(); // ? on vérifie la validité du token 
-// $bp = true;
+$tokenFromDataArray = CustomeToken::create(['email' => "Melissa@test.com", 'mot_de_passe' => "msofixghb"]); //? créer le token dans un tableau 
+$encoded = $tokenFromDataArray->encoded; // ? encode le token
+$tokenFromEncodedString = CustomeToken::create($encoded); // ? recréer un array avec les valeurs 
+$decoded = $tokenFromEncodedString->decoded; // ? avec les valeurs initial (décodé)
+$test = $tokenFromEncodedString->isValid(); // ? on vérifie la validité du token 
+$bp = true;
+
+// $newMail = new MailerService();
+// $newMail->send([
+//     "fromAddress" => ["newsletter@monblog.com","newsletter monblog.com"],
+//     "destAddresses" => ["lesnemelissa14@gmail.com"],
+//     "replyAddress" => ["info@maboutique.com","information maboutique.com"],
+//     "subject" => "Newsletter maboutique.com",
+//     "body" => "this is the HTML message send by <b>monblog.com</b>",
+//     "altBody" => "this is the plain text message for non-HTML mail client "]);
 
 
+//fin test mailer
 
 
 $request = HttpRequest::instance();
