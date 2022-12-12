@@ -24,7 +24,7 @@ class CustomeToken {
         else{
             throw new Exception("argument must be a string or an array"); // ? sinon on renvoie une exeption avec un mesg
         }
-
+      
     }
 
     public array $decoded; //? stocke le tableau de données

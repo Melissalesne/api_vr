@@ -27,6 +27,8 @@ use Controllers\AuthController;
 $origin = "http://localhost:3000";
 header("Access-Control-Allow-Origin: $origin");
 header("Access-Control-Allow-Methods: *");
+header("Access-Control-Allow-Headers: X-Requested-With, Content-Type, Origin, Cache-Control, Pragma, Authorization, Accept, Accept-Encoding");
+header("Access-Control-Allow-Credentials: true");
 
 //tests
 // $model= new Model("produit", ["nom"=>"une veste rouge"]);
@@ -38,12 +40,12 @@ header("Access-Control-Allow-Methods: *");
 
 use Helpers\CustomeToken; 
 
-$tokenFromDataArray = CustomeToken::create(['email' => "Melissa@test.com", 'mot_de_passe' => "msofixghb"]); //? créer le token dans un tableau 
-$encoded = $tokenFromDataArray->encoded; // ? encode le token
-$tokenFromEncodedString = CustomeToken::create($encoded); // ? recréer un array avec les valeurs 
-$decoded = $tokenFromEncodedString->decoded; // ? avec les valeurs initial (décodé)
-$test = $tokenFromEncodedString->isValid(); // ? on vérifie la validité du token 
-$bp = true;
+// $tokenFromDataArray = CustomeToken::create(['email' => "Melissa@test.com", 'mot_de_passe' => "msofixghb"]); //? créer le token dans un tableau 
+// $encoded = $tokenFromDataArray->encoded; // ? encode le token
+// $tokenFromEncodedString = CustomeToken::create($encoded); // ? recréer un array avec les valeurs 
+// $decoded = $tokenFromEncodedString->decoded; // ? avec les valeurs initial (décodé)
+// $test = $tokenFromEncodedString->isValid(); // ? on vérifie la validité du token 
+// $bp = true;
 
 // $newMail = new MailerService();
 // $newMail->send([

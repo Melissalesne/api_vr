@@ -65,45 +65,42 @@ class AuthController {
 
             //? Créer un Token à partir d'un tableau associatif (67,68)
 
-            $tokenFromDataArray = CustomeToken::create(['email' => $compte[0]->email, 'mot_de_passe' => $compte[0]->mot_de_passe]);
+            $tokenFromDataArray = CustomeToken::create(['compteRole' => $role[0]->permission, 'compteId' => $compte[0]->Id_compte]);
             $encoded = $tokenFromDataArray->encoded;
 
 
 
-            return ["result" => true, "role" => $role[0]->permission, "id" => $compte->Id_compte, "token" => $encoded]; // ? renvoi le result (role, id ,token )
+            return ["result" => true, "role" => $role[0]->permission, "id" => $compte[0]->Id_compte, "token" => $encoded]; // ? renvoi le result (role, id ,token )
         }
-
+        
         return ["result" => false]; // ? aucun compte n'a été trouvé ou le mdp ne correspond pas 
+        
     }
 
 
-    // public function check() {
-    //     $headers = apache_request_headers();
-    //     if(isset($header["Authorization"])) {
-    //         $token = $headers["Authorization"];
-    //     }
-    //     $secretKey = $_ENV['config']->$secretKey->secret;
-    //     if(isset($token) && !empty($token)) {
-    //         try {
-    //             $payload = CustomeToken($token, new Key($secretKey, 'efighijbsdkfbm'));
-    //         } catch (Exception $e) {
-    //             $payload = null;
-    //         }
-    //         if (isset($payload) &&
-    //         $payload->iss === "vinyle_remenber" &&
-    //         $payload->nbf  < time() &&
-    //         $payload->exp  > time()
-    //         ) {
-
-    //             return ["result" => true, "role" => $payload->compteRole, "id" => $payload->compteId];
-
-    //         }
+    public function check() {
+        $headers = apache_request_headers();
+        if(isset($headers["Authorization"])) {
+            $token = $headers["Authorization"];
+        }
+        
+        if(isset($token) && !empty($token)) {
+           $tkn =  CustomeToken::create($token);
+           if($tkn->isValid()){
+          
+                $decoded = $tkn->decoded;
                
-    //     }
 
-    //     return ["result" => false]; 
-    // }
+                    return ["result" => true, "role" => $decoded["compteRole"], "id" => $decoded["compteId"]];
+               
+
+            }
+               
+        }
+
+        return ["result" => false]; 
+    }
 }
 
 
-    ?>
+   

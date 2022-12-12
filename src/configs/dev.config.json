@@ -18,10 +18,10 @@
         "secret": "efighijbsdkfbm"
 
     },
-     "SpotifyAuthConfig": {
-        
-    "ClientSecret": "4b756862742d43aba7606dd361ece67f",
-    "ClientId": " 35bde3d071a9460a9bc6ebe4e30a1966"
-     }
+    "restricted" : {
+        "GET/compte": "$compteRole == 1;",
+        "GET/compte/:id": "$compteRole == 1 || compteId == $id;"
 
+    }
+ 
 }
