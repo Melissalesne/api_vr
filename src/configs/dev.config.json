@@ -19,9 +19,19 @@
 
     },
     "restricted" : {
-        "GET/compte": "$compteRole == 1;",
-        "GET/compte/:id": "$compteRole == 1 || compteId == $id;"
+        "GET/compte": "$compteRole == 4;",
+        "GET/compte/:id": "$compteRole == 4 || compteId == $id;"
 
+    },
+    "mailer": {
+        "main": {
+            "host": "smtp.gmail.com",
+            "port": 587,
+            "auth": true,
+            "secure": "tls",
+            "user": "melissa8059000@gmail.com",
+            "pass": "heuajdvqoltrvikx"
+        }
     }
  
 }

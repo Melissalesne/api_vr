@@ -84,14 +84,14 @@ class AuthController {
             $token = $headers["Authorization"];
         }
         
-        if(isset($token) && !empty($token)) {
-           $tkn =  CustomeToken::create($token);
-           if($tkn->isValid()){
+        if(isset($token) && !empty($token)) { // ? si le token exiqte et n'est pas vide 
+           $tkn =  CustomeToken::create($token); // ? on créer un token 
+           if($tkn->isValid()){ // ? si il est valide 
           
-                $decoded = $tkn->decoded;
+                $decoded = $tkn->decoded;//? on le decode 
                
 
-                    return ["result" => true, "role" => $decoded["compteRole"], "id" => $decoded["compteId"]];
+                    return ["result" => true, "role" => $decoded["compteRole"], "id" => $decoded["compteId"]]; // ? renvoie le result (role, id).
                
 
             }
@@ -99,6 +99,49 @@ class AuthController {
         }
 
         return ["result" => false]; 
+    }
+
+    public function register(){
+
+
+        $dbs = new DatabaseService("compte"); // ? je créer une instance de la class DBS pour la table compte 
+        $comptes = $dbs->selectWhere("compte = ?", [$this->body['email']]); 
+        if(count($comptes) > 0){
+            return ['result'=>false, 'message'=>'email '.$this->body['email'].' already used'];
+        }
+       
+        $issuedAt = time();
+        $expireAt = $issuedAt + 60 * 60 * 24;
+        $serverName = "vr-api";
+        $login =  $this->body['email'];
+        $requestData = [
+        'createdAt'  => $issuedAt,
+        'usableAt'  => $issuedAt,
+        'expireAt'  => $expireAt,
+        'email' => $email,
+        'nom' => $nom,
+        'prenom' => $prenom,
+        'numeroDeTelephone' => $numeroDeTelephone,
+        
+    ];
+    $tkn =  CustomeToken::create($token);
+    
+    $href = "http://localhost:3000/register/validate/$tkn";
+
+    $ms = new MailerService();
+    $mailParams = [
+        "fromAddress" => ["register@monblog.com","nouveau compte monblog.com"],
+        "destAddresses" => [$login],
+        "replyAddress" => ["noreply@monblog.com", "No Reply"],
+        "subject" => "Créer votre compte nomblog.com",
+        "body" => 'Click to validate the account creation <br>
+                    <a href="'.$href.'">Valider</a> ',
+        "altBody" => "Go to $href to validate the account creation"
+    ];
+    $sent = $ms->send($mailParams);
+    return ['result'=>$sent['result'], 'message'=> $sent['result'] ?
+        "Vérifier votre boîte mail et confirmer la création de votre compte sur monblog.com" :
+        "Une erreur est survenue, veuiller recommencer l'inscription"];
     }
 }
 

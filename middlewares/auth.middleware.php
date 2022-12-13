@@ -1,6 +1,6 @@
 <?php 
 
-use \CustomeToken;
+use Helpers\CustomeToken;
 
 
 class AuthMiddleware{
@@ -25,24 +25,23 @@ public function __construct($req)
 
 public function verify(){
     if(isset($this->condition)){
-     
-        if(isset($_ENV['vinyle_remenber'])){
-            $token = $_ENV['vinyle_remenber'];
+     $headers = apache_request_headers();
+        if(isset($headers['Authorization'])){
+            $token = $headers['Authorization'];
         }
      
         if(isset($token) && !empty($token)){
             try{
                 $tkn = CustomeToken::create($token);
             }catch(Exception $e){
-                $payload = null;
+                $tkn = null;
             }
-            if (isset($payload) &&
-                $decoded->usableAt === "vr-api" &&
-                $decoded->validity < time() &&
-                $decoded->expireAt> time())
+            if (isset($tkn) && $tkn->isValid()
+
+              )
             {
-                $userRole = $payload->userRole;
-                $userId = $payload->userId;
+                $compteRole = $tkn->decoded["compteRole"];
+                $compteId = $tkn->decoded["compteId"];
                 $id = $this->id;
                 $test = false;
                 eval("\$test=".$this->condition);

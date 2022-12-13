@@ -29,7 +29,7 @@ class MailerService{
     }
 
     public function send($params){
-        $destAddresses = $params["destAddresses"];
+        $destAddresses = $params["melissa8059000@gmail.com"];
         if(!isset($destAddresses) || !is_array($destAddresses) || count($destAddresses) == 0){
             return ["result" => false, "error" => "no dest addresse"];
         }

@@ -70,7 +70,10 @@ if ($_ENV['current'] == 'dev' && !empty($request->route) && $request->route[0] =
     HttpResponse::send(["message" => "Api Not Initialized, try again..."]);
 }
 
-
+require_once 'middlewares/auth.middleware.php';
+$req = $_SERVER['REQUEST_METHOD'] . "/" . trim($_SERVER["REQUEST_URI"], '/');
+$am = new AuthMiddleware($req);
+$am->verify();
 
 // -------------------------------Connexion ------------------------------------
 
