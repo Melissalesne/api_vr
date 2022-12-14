@@ -8,15 +8,15 @@ class MailerService{
 
     public function __construct($profil = "main")
     {
-        $config = $_ENV["mailer"][$profil];
+        $config = $_ENV["config"]->mailer->{$profil};
         $mailer = new PHPMailer(true);
         $mailer->isSMTP();
-        $mailer->Host = $config["host"];
-        $mailer->Port = $config["port"];
-        $mailer->SMTPAuth = $config["auth"];
-        $mailer->SMTPSecure = $config["secure"];
-        $mailer->Username = $config["user"];
-        $mailer->Password = $config["pass"];
+        $mailer->Host = $config->host;
+        $mailer->Port = $config->port;
+        $mailer->SMTPAuth = $config->auth;
+        $mailer->SMTPSecure = $config->secure;
+        $mailer->Username = $config->user;
+        $mailer->Password = $config->pass;
         $mailer->CharSet = 'UTF-8';
         $mailer->SMTPOptions = array(
             'ssl' => array(
@@ -29,7 +29,7 @@ class MailerService{
     }
 
     public function send($params){
-        $destAddresses = $params["melissa8059000@gmail.com"];
+        $destAddresses = $params["destAddresses"];
         if(!isset($destAddresses) || !is_array($destAddresses) || count($destAddresses) == 0){
             return ["result" => false, "error" => "no dest addresse"];
         }

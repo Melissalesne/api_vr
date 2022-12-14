@@ -11,6 +11,7 @@ $config = file_get_contents("src/configs/" . $_ENV["current"] . ".config.json");
 $_ENV['config'] = json_decode($config);
 
 require_once 'autoload.php';
+require_once 'vendor/autoload.php';
 
 // use Helpers\HttpResponse;
 // $data="OK";

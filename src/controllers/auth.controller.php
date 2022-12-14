@@ -4,6 +4,7 @@
 use Helpers\HttpRequest;
 use Services\DatabaseService;
 use Helpers\CustomeToken;
+use Services\MailerService;
 
 
 
@@ -105,15 +106,18 @@ class AuthController {
 
 
         $dbs = new DatabaseService("compte"); // ? je créer une instance de la class DBS pour la table compte 
-        $comptes = $dbs->selectWhere("compte = ?", [$this->body['email']]); 
+        $comptes = $dbs->selectWhere("email = ?", [$this->body['email']]); 
         if(count($comptes) > 0){
             return ['result'=>false, 'message'=>'email '.$this->body['email'].' already used'];
         }
        
         $issuedAt = time();
-        $expireAt = $issuedAt + 60 * 60 * 24;
+        $expireAt = $issuedAt + 60 * 60 * 1;
         $serverName = "vr-api";
-        $login =  $this->body['email'];
+        $email =  $this->body['email'];
+        $nom =  $this->body['nom'];
+        $prenom =  $this->body['prenom'];
+        $numeroDeTelephone =  $this->body['numeroDeTelephone'];
         $requestData = [
         'createdAt'  => $issuedAt,
         'usableAt'  => $issuedAt,
@@ -122,17 +126,18 @@ class AuthController {
         'nom' => $nom,
         'prenom' => $prenom,
         'numeroDeTelephone' => $numeroDeTelephone,
+      
         
     ];
-    $tkn =  CustomeToken::create($token);
+    $tkn =  CustomeToken::create($requestData);
     
-    $href = "http://localhost:3000/register/validate/$tkn";
+    $href = "http://localhost:3000/register/validate/$tkn->encoded";
 
     $ms = new MailerService();
     $mailParams = [
-        "fromAddress" => ["register@monblog.com","nouveau compte monblog.com"],
-        "destAddresses" => [$login],
-        "replyAddress" => ["noreply@monblog.com", "No Reply"],
+        "fromAddress" => ["register@maboutique.com","nouveau compte maBoutique.com"],
+        "destAddresses" => [$email],
+        "replyAddress" => ["noreply@maBoutique.com", "No Reply"],
         "subject" => "Créer votre compte nomblog.com",
         "body" => 'Click to validate the account creation <br>
                     <a href="'.$href.'">Valider</a> ',
@@ -140,8 +145,37 @@ class AuthController {
     ];
     $sent = $ms->send($mailParams);
     return ['result'=>$sent['result'], 'message'=> $sent['result'] ?
-        "Vérifier votre boîte mail et confirmer la création de votre compte sur monblog.com" :
+        "Vérifier votre boîte mail et confirmer la création de votre compte sur maBoutique.com" :
         "Une erreur est survenue, veuiller recommencer l'inscription"];
+    }
+
+
+    public function validate(){
+        $token = $this->body['token'] ?? "";
+            
+        if(isset($token) && !empty($token)){
+
+            try{
+                $tkn = CustomeToken::decode($token);
+            }catch(Exception $e){
+                $tkn = null;
+            }
+            if (isset($tkn) && $tkn->isValid())
+            
+            
+                    $token->createdAt === "vr-api" &&
+                    $token->usableAt < time() &&
+                    $token->expireAt > time();
+            {
+                $nom = $token->nom;
+                $prenom = $token->prenom;
+                $numeroDeTelephone =  $token->$numeroDeTelephone;
+                $email =  $token->$email;
+                $motDePasse =  $token->$motDePasse;
+                return ["result"=>true, "nom"=>$nom, "prenom"=>$prenom, "numeroDeTelephone"=>$numeroDeTelephone, "email"=>$email, "motDePasse"=>$motDePasse];
+            }
+        }
+        return ['result'=>false];
     }
 }
 
