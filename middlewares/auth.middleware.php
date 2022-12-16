@@ -24,19 +24,19 @@ public function __construct($req)
 }
 
 public function verify(){
-    if(isset($this->condition)){
+    if(isset($this->condition)){//? si les conditions existe
      $headers = apache_request_headers();
-        if(isset($headers['Authorization'])){
-            $token = $headers['Authorization'];
+        if(isset($headers['Authorization'])){ //? si l'entête n'est pas vide 
+            $token = $headers['Authorization'];//? on ajoute le token dans l'entête d'authaurization
         }
      
-        if(isset($token) && !empty($token)){
+        if(isset($token) && !empty($token)){ // ? si le token existe et si il n'est pas vide 
             try{
-                $tkn = CustomeToken::create($token);
+                $tkn = CustomeToken::create($token); //? on utilise un try catch pour capturé les erreurs si jamais le token n'a pas été créer, dans ce cas le token sera égal à Null
             }catch(Exception $e){
                 $tkn = null;
             }
-            if (isset($tkn) && $tkn->isValid()
+            if (isset($tkn) && $tkn->isValid() //? si le token n'est pas vide et qu'il est valide 
 
               )
             {

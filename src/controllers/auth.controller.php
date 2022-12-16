@@ -1,3 +1,4 @@
+
 <?php  namespace Controllers;
 
 
@@ -80,6 +81,7 @@ class AuthController {
 
 
     public function check() {
+        
         $headers = apache_request_headers();
         if(isset($headers["Authorization"])) {
             $token = $headers["Authorization"];
@@ -99,16 +101,16 @@ class AuthController {
                
         }
 
-        return ["result" => false]; 
+        return ["result" => false]; // ? sinon on return false 
     }
 
     public function register(){
 
 
         $dbs = new DatabaseService("compte"); // ? je créer une instance de la class DBS pour la table compte 
-        $comptes = $dbs->selectWhere("email = ?", [$this->body['email']]); 
-        if(count($comptes) > 0){
-            return ['result'=>false, 'message'=>'email '.$this->body['email'].' already used'];
+        $comptes = $dbs->selectWhere("email = ?", [$this->body['email']]); // ? on selectionne la ligne qui à le meme email 
+        if(count($comptes) > 0){ // ?  (donc si un compte existe déjà )
+            return ['result'=>false, 'message'=>'email '.$this->body['email'].' already used']; // ? on renvoie un msg qui indique que l'email existe déjà en bdd 
         }
        
         $issuedAt = time();
@@ -118,6 +120,9 @@ class AuthController {
         $nom =  $this->body['nom'];
         $prenom =  $this->body['prenom'];
         $numeroDeTelephone =  $this->body['numeroDeTelephone'];
+        $ville =  $this->body['ville'];
+        $codePostal =  $this->body['codePostal'];
+        $pays =  $this->body['pays'];
         $requestData = [
         'createdAt'  => $issuedAt,
         'usableAt'  => $issuedAt,
@@ -126,56 +131,90 @@ class AuthController {
         'nom' => $nom,
         'prenom' => $prenom,
         'numeroDeTelephone' => $numeroDeTelephone,
+        'ville' => $ville,
+        'codePostal' => $codePostal,
+        'pays' => $pays,
       
         
     ];
-    $tkn =  CustomeToken::create($requestData);
+    $tkn =  CustomeToken::create($requestData); // ? on créer un token 
     
-    $href = "http://localhost:3000/register/validate/$tkn->encoded";
+    $href = "http://localhost:3000/register/validate/$tkn->encoded"; // ? il va nous renvoyer vers cette route avec dans l'url le token 
 
-    $ms = new MailerService();
+    $ms = new MailerService(); // ? on créer une nouvelle instance de MailService, pour pouvoir envoyer des emails 
+
     $mailParams = [
         "fromAddress" => ["register@maboutique.com","nouveau compte maBoutique.com"],
         "destAddresses" => [$email],
         "replyAddress" => ["noreply@maBoutique.com", "No Reply"],
         "subject" => "Créer votre compte nomblog.com",
-        "body" => 'Click to validate the account creation <br>
+        "body" => 'Click to validate the account creation <br> // ? on clique sur le lien pour valider la création de compte 
                     <a href="'.$href.'">Valider</a> ',
         "altBody" => "Go to $href to validate the account creation"
     ];
-    $sent = $ms->send($mailParams);
+    $sent = $ms->send($mailParams); // ? le résultat de l'envoie du mail 
     return ['result'=>$sent['result'], 'message'=> $sent['result'] ?
         "Vérifier votre boîte mail et confirmer la création de votre compte sur maBoutique.com" :
         "Une erreur est survenue, veuiller recommencer l'inscription"];
     }
 
-
-    public function validate(){
+/**
+ //? cette fonction verifie si le token existe bien et va décodé les données, pour permettre de récupérer les données initials 
+ *
+ * @return void
+ */
+    public function validate(){ 
         $token = $this->body['token'] ?? "";
             
-        if(isset($token) && !empty($token)){
+        if(isset($token) && !empty($token)){ // ? vérifie si le token existe et si il n'est pas vide
 
             try{
-                $tkn = CustomeToken::decode($token);
+                $tkn = CustomeToken::create($token);// ? on utilise un try catch pour capturé les erreurs si jamais le token n'a pas été créer, dans ce cas le token sera égal à Null
             }catch(Exception $e){
                 $tkn = null;
             }
-            if (isset($tkn) && $tkn->isValid())
-            
-            
-                    $token->createdAt === "vr-api" &&
-                    $token->usableAt < time() &&
-                    $token->expireAt > time();
+            if (isset($tkn) && $tkn->isValid()) // ? si le token existe et est valide , on decodé le token qui va nous permettrent d'obtenir le tableau de données initial 
             {
-                $nom = $token->nom;
-                $prenom = $token->prenom;
-                $numeroDeTelephone =  $token->$numeroDeTelephone;
-                $email =  $token->$email;
-                $motDePasse =  $token->$motDePasse;
-                return ["result"=>true, "nom"=>$nom, "prenom"=>$prenom, "numeroDeTelephone"=>$numeroDeTelephone, "email"=>$email, "motDePasse"=>$motDePasse];
+                $token = $tkn->decoded;
+                $nom = $token["nom"];
+                $prenom = $token["prenom"];
+                $numeroDeTelephone =  $token["numeroDeTelephone"];
+                $ville =  $token["ville"];
+                $codePostal =  $token["codePostal"];
+                $pays =  $token["pays"];
+                $email =  $token["email"];
+                return ["result"=>true, "nom"=>$nom, "prenom"=>$prenom, "numeroDeTelephone"=>$numeroDeTelephone, "ville" =>$ville, "codePostal"=>$codePostal, "pays"=>$pays, "email"=>$email]; // ? nous retournera le resul a true (email, mdp...)
             }
         }
-        return ['result'=>false];
+        return ['result'=>false]; // ? sinon sa nous return false 
+    }
+
+
+
+    public function create(){
+        $dbs = new DatabaseService("compte");
+        $user = $dbs->insertOne(["email"=>$this->body["email"], "is_deleted"=>0, "Id_role"=>2]);
+        if($user){
+            
+            $motDePasse = password_hash($this->body["motDePasse"], PASSWORD_ARGON2ID, [
+                'memory_cost' => 1024,
+                'time_cost' => 2,
+                'threads' => 2
+            ]);
+            $prefix = $_ENV['config']->hash->prefix;
+            $motDePasse = str_replace($prefix, "", $motDePasse);
+    
+            $dbs = new DatabaseService("compte");
+            $compte = $dbs->insertOne(
+                ["compte"=>$this->body["compte"],
+                "is_deleted"=>0,
+                "motDePasse"=>$motDePasse,
+                "Id_compte"=> $user->Id_compte ]);
+            if($compte){
+                return ["result"=>true];
+            }
+        }
+        return ["result"=>false];
     }
 }
 

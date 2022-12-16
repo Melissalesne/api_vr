@@ -30,15 +30,15 @@ class CustomeToken {
     public array $decoded; //? stocke le tableau de données
     public string $encoded; //? stocke le token
 
-private function setValidity($decoded):void //? Je créer une fonction 
+private function setValidity($decoded):void //? on créer une fonction 
  {
-    $timeStamp = time(); // ? je récupére le  timeStamp 
+    $timeStamp = time(); // ? on y récupére le  timeStamp 
 
- // ? je vérifie si dans mon array associatif il y a des données sinon je la stocke 
+ // ? on  va  vérifie si dans le tableau associatif il y a des données sinon on  la stocke 
  
     if(!isset($decoded['createdAt']))// ? si les entrées ne sont pas fournies
     {
-        $decoded['createdAt'] = $timeStamp; // ? je stocke le timeStamp dans createdAt
+        $decoded['createdAt'] = $timeStamp; // ? on  stocke le timeStamp dans createdAt
     }; 
 
     if(!isset($decoded['usableAt']))
@@ -56,7 +56,7 @@ private function setValidity($decoded):void //? Je créer une fonction
         $decoded['expireAt'] = $timeStamp + self::$defaultValidity;
     };
 
-    $this->decoded = $decoded; // ? je stoke le new array associatif 
+    $this->decoded = $decoded; // ? on va   stoke le new array associatif 
  }
 
 /**
@@ -79,28 +79,29 @@ private function encode(array $decoded = []) : void
     
     $token = "$payload".self::$remarkableKey."$signature"; // ? on concaténe le payload, $remarkableKey et la signature
 
-    $this->encoded = $token; // ? on stocke token ds encoded 
+    $this->encoded = base64_encode($token); // ? on stocke le token dans encoded 
 
 }
 
 /**
-//? Décode un token pour obtenir le tableau de données initial
+//? Décode le token pour obtenir le tableau de données initial
 *
 */
+
 private function decode(string $encoded) : void
 {
-    $token = $encoded;
+    $token = base64_decode($encoded);
     $encodedSplit = explode(self::$remarkableKey, $token); // ? split la chaine  à l'endroit ou il y a le caractère remarquable
     $signature = $encodedSplit[1]; 
     $payload = $encodedSplit[0]; 
     $secret_key = $_ENV['config']->secret_key->secret;
-    if(password_verify($payload. self::$separator . $secret_key, $signature)){ // ? vérifie si le paylod n'a pas été modifié par l'utilisateur 
+    if(password_verify($payload. self::$separator . $secret_key, $signature)){ // ? vérifie si le paylod n'a pas été modifié par l'utilisateur (si le mdp entré par le user correspond bien au mdp hasché en bdd)
 
         $decoded = base64_decode($payload);
-        $decoded = json_decode($decoded,true); // ? decode et retourne en array associatif
+        $decoded = json_decode($decoded,true); // ? decode et retourne en tableau associatif
     }
 
-    $this->decoded = $decoded ?? null; // ? je stocke la version decoded ds l'instance 
+    $this->decoded = $decoded ?? null; // ? on stocke la version decoded ds l'instance 
 }
 
 /**

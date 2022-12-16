@@ -8,9 +8,9 @@ class AutoLoader {
       $pattern = ['/Controller\b/', '/Service\b/', '/Config\b/'];
       $replace = ['.controller', '.service', '.config'];
       
-      $file = 'src/'.preg_replace($pattern, $replace, $class) . '.php'; 
+      $file = 'src/'.preg_replace($pattern, $replace, $class) . '.php'; //? l'interpréteur va désormais rechercher des fichiers portant le même nom que la classe
       
-      if(file_exists($file)){     
+      if(file_exists($file)){      //? avant de charger les fichiers dans l'autoload, on vérifie leurs existance 
          require_once $file;
       }
       $toolsPath = lcfirst($class).".php";    
@@ -24,6 +24,6 @@ class AutoLoader {
   
 }
 
-AutoLoader::register(); 
+AutoLoader::register(); //? on charge la methode statique 
 
 ?>
