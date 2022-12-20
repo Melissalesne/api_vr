@@ -10,6 +10,7 @@ class CustomeToken {
     private static $separator = null;
     private function __construct()
     {
+        
 
         $args = func_get_args(); // ? retourne les arguments de la fonction 
         if(empty($args)){ // ? si les arguments son vide
@@ -30,7 +31,7 @@ class CustomeToken {
     public array $decoded; //? stocke le tableau de données
     public string $encoded; //? stocke le token
 
-private function setValidity($decoded):void //? on créer une fonction 
+private function setValidity($decoded):void 
  {
     $timeStamp = time(); // ? on y récupére le  timeStamp 
 

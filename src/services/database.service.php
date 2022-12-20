@@ -74,6 +74,30 @@ class DatabaseService
         return $rows; // ? récupère la ligne de la colonne de ma table 
     }
 
+    function insertOne($body = []){ 
+        $columns = "";
+        $values = "";
+        if(isset($body["Id_$this->table"])){
+            unset($body["Id_$this->table"]);
+        }
+        $valuesToBind = array();
+        foreach ($body as $k => $v) {
+            $columns .= $k . ",";
+            $values .= "?,";
+            array_push($valuesToBind, $v);
+        }
+        $columns = trim($columns, ',');
+        $values = trim($values, ',');
+        $sql = "INSERT INTO $this->table ($columns) VALUES ($values)";
+        $resp = $this->query($sql, $valuesToBind);
+        if($resp->result && $resp->statment->rowCount() == 1){
+            $insertedId = self::$connection->lastInsertId();
+            $row = $this->selectOne($insertedId);
+            return $row;
+        }
+        return false;
+    }
+
     public function getSchema()
     {
 

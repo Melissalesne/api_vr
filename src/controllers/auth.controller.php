@@ -1,5 +1,6 @@
+<?php 
 
-<?php  namespace Controllers;
+namespace Controllers;
 
 
 use Helpers\HttpRequest;
@@ -47,7 +48,7 @@ class AuthController {
      */
     public function connexion() 
     {
-        $dbs = new DatabaseService('compte');  // ? je créer une instance de la class DBS pour la table compte 
+        $dbs = new DatabaseService('compte');  // ? on créer une nouvelle  instance de la class DBS pour la table compte 
 
         $email = filter_var($this->body['email'], FILTER_SANITIZE_EMAIL); 
 
@@ -79,12 +80,18 @@ class AuthController {
         
     }
 
+     /**
+      //?  Cette fonction va nous servir à vérifier le token 
+      *
+      * @return void
+      */
 
+      
     public function check() {
         
         $headers = apache_request_headers();
-        if(isset($headers["Authorization"])) {
-            $token = $headers["Authorization"];
+        if(isset($headers["Authorization"])) { // ? si l'entête n'est pas vide 
+            $token = $headers["Authorization"]; // ? on ajoute le token dans  l'entête autorization
         }
         
         if(isset($token) && !empty($token)) { // ? si le token exiqte et n'est pas vide 
@@ -103,7 +110,11 @@ class AuthController {
 
         return ["result" => false]; // ? sinon on return false 
     }
-
+    /**
+     //? vérifie si le compte existe en base de données
+     *
+     * @return void
+     */
     public function register(){
 
 
@@ -192,29 +203,30 @@ class AuthController {
 
 
     public function create(){
-        $dbs = new DatabaseService("compte");
-        $user = $dbs->insertOne(["email"=>$this->body["email"], "is_deleted"=>0, "Id_role"=>2]);
+        $dbs = new DatabaseService("client"); // ? je créer une nouvelle instance dde DatabaseService pour la table client
+        $user = $dbs->insertOne(["nom"=>$this->body["nom"],"prenom"=>$this->body["prenom"],
+        "numeroDeTelephone"=>$this->body["numeroDeTelephone"], "ville"=>$this->body["ville"],"codePostal"=>$this->body["codePostal"],"pays"=>$this->body["pays"],"email"=>$this->body["email"], "is_deleted"=>0, "Id_role"=>2,"motDePasse"=>$this->body["motDePasse"]]); // ? je créer un nouveau user 
         if($user){
             
-            $motDePasse = password_hash($this->body["motDePasse"], PASSWORD_ARGON2ID, [
+            $motDePasse = password_hash($this->body["motDePasse"], PASSWORD_ARGON2ID, [ // ? si le mdp et = au mdp hasché 
                 'memory_cost' => 1024,
                 'time_cost' => 2,
                 'threads' => 2
             ]);
-            $prefix = $_ENV['config']->hash->prefix;
-            $motDePasse = str_replace($prefix, "", $motDePasse);
+            $prefix = $_ENV['config']->hash->prefix; // ? chercher le prefix dans config pour le MDP
+            $motDePasse = str_replace($prefix, "", $motDePasse); // ? remplace le prefix par un nouveau MDP
     
-            $dbs = new DatabaseService("compte");
-            $compte = $dbs->insertOne(
-                ["compte"=>$this->body["compte"],
+            $dbs = new DatabaseService("compte");// ? je créer une nouvelle instance dde DatabaseService pour la table compte
+            $compte = $dbs->insertOne( // ? j'insert les valeurs 
+                ["compte"=>$this->body["compte"], 
                 "is_deleted"=>0,
                 "motDePasse"=>$motDePasse,
                 "Id_compte"=> $user->Id_compte ]);
-            if($compte){
+            if($compte){ //?  si le compte à été créer sa return true
                 return ["result"=>true];
             }
         }
-        return ["result"=>false];
+        return ["result"=>false]; //? sinon return false
     }
 }
 
