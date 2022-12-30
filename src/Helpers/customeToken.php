@@ -17,13 +17,13 @@ class CustomeToken {
             throw new Exception("one argument required"); // ? return une Exception avec un msg
         }
         elseif(is_array($args[0])){ // ? si l'argument a l'index 0 est un tableau 
-            $this->encode($args[0]); // ? on encode
+            $this->encode($args[0]); 
         }
-        elseif(is_string($args[0])){ // ? si l'argument à l'index 0 est un string 
-            $this->decode($args[0]); // ? on decode
+        elseif(is_string($args[0])){ 
+            $this->decode($args[0]); 
         }
         else{
-            throw new Exception("argument must be a string or an array"); // ? sinon on renvoie une exeption avec un mesg
+            throw new Exception("argument must be a string or an array"); 
         }
       
     }
@@ -128,7 +128,7 @@ public function isValid(bool $withDate = true) : bool
     public static function create($entry) : CustomeToken
     {
 
-        return new CustomeToken($entry); // ? retourne et crée un new token
+        return new CustomeToken($entry); 
 
     }
 

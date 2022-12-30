@@ -43,6 +43,7 @@ class AuthController {
     }
     /**
      // ? cette fonction va vérifier si les données envoyer par l'utilisateur sont correcte et sont renvoyer en BDD 
+     
      *
      * @return void
      */
@@ -111,7 +112,7 @@ class AuthController {
         return ["result" => false]; // ? sinon on return false 
     }
     /**
-     //? vérifie si le compte existe en base de données
+     //? enregistrer un compte en bdd
      *
      * @return void
      */
@@ -119,9 +120,9 @@ class AuthController {
 
 
         $dbs = new DatabaseService("compte"); // ? je créer une instance de la class DBS pour la table compte 
-        $comptes = $dbs->selectWhere("email = ?", [$this->body['email']]); // ? on selectionne la ligne qui à le meme email 
+        $comptes = $dbs->selectWhere("email = ?", [$this->body['email']]); // ? on vérifie la ligne qui à le meme email 
         if(count($comptes) > 0){ // ?  (donc si un compte existe déjà )
-            return ['result'=>false, 'message'=>'email '.$this->body['email'].' already used']; // ? on renvoie un msg qui indique que l'email existe déjà en bdd 
+            return ['result'=>false, 'message'=>'email '.$this->body['email'].' already used']; // ? on retourne false 
         }
        
         $issuedAt = time();
@@ -150,7 +151,7 @@ class AuthController {
     ];
     $tkn =  CustomeToken::create($requestData); // ? on créer un token 
     
-    $href = "http://localhost:3000/register/validate/$tkn->encoded"; // ? il va nous renvoyer vers cette route avec dans l'url le token 
+    $href = "http://localhost:3000/register/validate/$tkn->encoded"; // ? renvoie un lien avec le token 
 
     $ms = new MailerService(); // ? on créer une nouvelle instance de MailService, pour pouvoir envoyer des emails 
 
@@ -159,7 +160,7 @@ class AuthController {
         "destAddresses" => [$email],
         "replyAddress" => ["noreply@maBoutique.com", "No Reply"],
         "subject" => "Créer votre compte nomblog.com",
-        "body" => 'Click to validate the account creation <br> // ? on clique sur le lien pour valider la création de compte 
+        "body" => 'Click to validate the account creation <br> // ? le user  clique sur le lien pour valider la création de compte 
                     <a href="'.$href.'">Valider</a> ',
         "altBody" => "Go to $href to validate the account creation"
     ];
@@ -170,7 +171,7 @@ class AuthController {
     }
 
 /**
- //? cette fonction verifie si le token existe bien et va décodé les données, pour permettre de récupérer les données initials 
+ //? cette fonction va vérifier si le token et valide et va le décoder 
  *
  * @return void
  */
@@ -194,7 +195,8 @@ class AuthController {
                 $codePostal =  $token["codePostal"];
                 $pays =  $token["pays"];
                 $email =  $token["email"];
-                return ["result"=>true, "nom"=>$nom, "prenom"=>$prenom, "numeroDeTelephone"=>$numeroDeTelephone, "ville" =>$ville, "codePostal"=>$codePostal, "pays"=>$pays, "email"=>$email]; // ? nous retournera le resul a true (email, mdp...)
+                return ["result"=>true, "nom"=>$nom, "prenom"=>$prenom, "numeroDeTelephone"=>$numeroDeTelephone, "ville" =>$ville, "codePostal"=>$codePostal, "pays"=>$pays, "email"=>$email]; 
+                // ? nous retournera le resul a true (email, mdp...)(L 197)
             }
         }
         return ['result'=>false]; // ? sinon sa nous return false 
@@ -203,25 +205,25 @@ class AuthController {
 
 
     public function create(){
-        $dbs = new DatabaseService("client"); // ? je créer une nouvelle instance dde DatabaseService pour la table client
-        $user = $dbs->insertOne(["nom"=>$this->body["nom"],"prenom"=>$this->body["prenom"],
-        "numeroDeTelephone"=>$this->body["numeroDeTelephone"], "ville"=>$this->body["ville"],"codePostal"=>$this->body["codePostal"],"pays"=>$this->body["pays"],"email"=>$this->body["email"], "is_deleted"=>0, "Id_role"=>2,"motDePasse"=>$this->body["motDePasse"]]); // ? je créer un nouveau user 
-        if($user){
+        $dbs = new DatabaseService("client"); // ? je créer une nouvelle instance de DatabaseService pour la table client
+        $user = $dbs->insertOne(["nom"=>$this->body["nom"],"prenom"=>$this->body["prenom"], // ? On insère les données du formulaire
+        "numeroDeTelephone"=>$this->body["numeroDeTelephone"], "ville"=>$this->body["ville"],"codePostal"=>$this->body["codePostal"],"pays"=>$this->body["pays"],"email"=>$this->body["email"], "is_deleted"=>0, "Id_role"=>2,"motDePasse"=>$this->body["motDePasse"]]); 
+        if($user){//?je créer un nouveau user(L208) ,  si le user est créer(L 209)
             
-            $motDePasse = password_hash($this->body["motDePasse"], PASSWORD_ARGON2ID, [ // ? si le mdp et = au mdp hasché 
+            $motDePasse = password_hash($this->body["motDePasse"], PASSWORD_ARGON2ID, [ // ?  on hasche le mot de passe 
                 'memory_cost' => 1024,
                 'time_cost' => 2,
                 'threads' => 2
             ]);
-            $prefix = $_ENV['config']->hash->prefix; // ? chercher le prefix dans config pour le MDP
-            $motDePasse = str_replace($prefix, "", $motDePasse); // ? remplace le prefix par un nouveau MDP
+            $prefix = $_ENV['config']->hash->prefix; // ? on va  chercher le prefix dans config pour le MDP
+            $motDePasse = str_replace($prefix, "", $motDePasse); // ?  on supprime le prefixe dans le mdp 
     
-            $dbs = new DatabaseService("compte");// ? je créer une nouvelle instance dde DatabaseService pour la table compte
-            $compte = $dbs->insertOne( // ? j'insert les valeurs 
+            $dbs = new DatabaseService("compte");// ? je créer une nouvelle instance de DatabaseService pour la table compte
+            $compte = $dbs->insertOne( // ?  je créer une ligne  sur la table compte 
                 ["compte"=>$this->body["compte"], 
                 "is_deleted"=>0,
                 "motDePasse"=>$motDePasse,
-                "Id_compte"=> $user->Id_compte ]);
+                "Id_compte"=> $user->Id_compte ]);// ? j'entre le mdp et le id
             if($compte){ //?  si le compte à été créer sa return true
                 return ["result"=>true];
             }

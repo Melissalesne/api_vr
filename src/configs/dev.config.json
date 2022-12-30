@@ -9,8 +9,6 @@
     "hash":{
 
         "prefix": "$argon2id$v=19$m=1024,t=2,p=2$"
-        
-
     } ,
 
     "secret_key":{
@@ -18,9 +16,11 @@
         "secret": "efighijbsdkfbm"
 
     },
+
     "restricted" : {
         "GET/compte": "$compteRole == 4;",
-        "GET/compte/:id": "$compteRole == 4 || compteId == $id;"
+        "GET/compte/:id": "$compteRole == 4 || $compteId == $id;"
+       
 
     },
     "mailer": {
